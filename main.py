@@ -6,25 +6,25 @@ import time
 import json
 import sys
 
-# try:
-#     tar = sys.argv[1]
-# except:
-#     print('А где .tar.gz архив???')
-#     sys.exit(1)
+try:
+    tar = sys.argv[1]
+except:
+    print('А где .tar.gz архив???')
+    sys.exit(1)
 #
 js = ["domain", "flag", "path", "secure", "expiration", "name", "value"]
 #
-# try:
-#     tarf = tarfile.open(tar, 'r:gz')
-# except IsADirectoryError as error:
-#     print(error)
-#     sys.exit(1)
-# except tarfile.ReadError as error:
-#     print(error)
-#     sys.exit(1)
+try:
+    tarf = tarfile.open(tar, 'r:gz')
+except IsADirectoryError as error:
+    print(error)
+    sys.exit(1)
+except tarfile.ReadError as error:
+    print(error)
+    sys.exit(1)
 
-tar = '/home/viktor/PycharmProjects/cookie/2020_02_06_13_28-lr4R6C.tar.gz'
-tarf = tarfile.open(tar, 'r:gz')
+# tar = '/home/viktor/PycharmProjects/cookie/2020_02_06_13_28-lr4R6C.tar.gz'
+# tarf = tarfile.open(tar, 'r:gz')
 try:
     result = {}
     result['count_zip'] = len(tarf.getmembers())
