@@ -262,7 +262,7 @@ if debug:
     except:
         pass
 else:
-    file = 'Facebook_20_16.zip'
+    file = ''
 
 
 try:
