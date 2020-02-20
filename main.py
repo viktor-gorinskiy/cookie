@@ -7,6 +7,10 @@ import sys
 import fleep
 import rarfile
 
+
+debug = False
+# debug = True
+
 filter_cook = True
 # filter_cook = False
 
@@ -16,7 +20,7 @@ def type_file(file):
     with open(file, "rb") as file:
         info = fleep.get(file.read(128))
     # print('111',info.extension)
-    return info.extension[0]
+    return info.extension
 
 def tar_file(tar_file):
     js = ["domain", "flag", "path", "secure", "expiration", "name", "value"]
@@ -93,10 +97,13 @@ def zip_file(file):
     cookie_dict = []
     # print(z.filelist)
     for file in z.filelist:
-        f_name = file.filename.replace('[facebook] Europe, Poland ','').split('/')[0].replace('(', '').replace(')', '')
-        # print(f_name)
-        result[f_name]= {}
-        # print(file.filename)
+        # result = {}
+        data = []
+        f_name = file.filename.split('/')[0].replace('(', '').replace(')', '')
+        # f_name = file.filename
+        if not f_name in result:
+            result[f_name] = {}
+
         if 'pass' in file.filename.lower():
             # print('\tfile.filename',file.filename)
             f = z.open(file.filename)
@@ -108,17 +115,31 @@ def zip_file(file):
                 except:
                     pass
             mega_line = mega_line.split('\r\n\r\n')
-            # account_pair = {}
             account_pair = ''
             for d in mega_line:
                 d = d.split('\r\n')
                 if len(d) >= 3:
                     if 'facebook.com' in d[1]:
-                        login = d[2].split('Login: ')[1]
-                        password = d[3].split('Password: ')[1]
+                        login = d[2].split('USER:')[1].replace('\t','')
+                        password = d[3].split('PASS:')[1].replace('\t','')
                         account_pair = login + ' ' + password
-
                         data.append(account_pair)
+            unique_user_pass = list(set(data))
+            account = []
+            for user_dat in unique_user_pass:
+                # number_of_accounts = len(user_dat)
+                user_pass = {}
+
+                user_pass['login'] = user_dat.split(' ')[0]
+                user_pass['pass'] = user_dat.split(' ')[1]
+                account.append(user_pass)
+                # print(user_pass)
+                # print(account)
+            # print(f_name, 'account', account,'\n')
+        # result['count_files'] = len(result)
+            result[f_name]['count_accounts'] = len(account)
+            result[f_name]['accounts'] = account
+        # result[f_name]['cookies'] = cookie_dict
 
         if 'cookies' in file.filename.lower():
         #     # print('\tcook',file.filename)
@@ -133,22 +154,8 @@ def zip_file(file):
                         pass
                     cookie = dict(zip(js, line_cook))
                     cookie_dict.append(cookie)
-        unique_user_pass = list(set(data))
-        account = []
-        for user_dat in unique_user_pass:
-            # number_of_accounts = len(user_dat)
-            user_pass = {}
-
-            user_pass['login'] = user_dat.split(' ')[0]
-            user_pass['pass'] = user_dat.split(' ')[1]
-            account.append(user_pass)
-            # print(user_pass)
-            # print(account)
-        # print('account', account,'\n')
-        # # number_of_accounts = len(account)
-        # result[file]['count_accounts'] = len(account)
-        result[f_name]['accounts'] = account
-        result[f_name]['cookies'] = cookie_dict
+            result[f_name]['cookies'] = cookie_dict
+    result['count_files'] = len(result)
     print(json.dumps(result))
 
 def rar_file(archive):
@@ -234,39 +241,47 @@ def rar_file(archive):
 
     print(json.dumps(result))
 
+if debug:
+    try:
+        if sys.argv[1] == '-h':
+            print('to disable the filter, add a third parameter: filter_cook_off')
+        else:
+            file = sys.argv[1]
 
-try:
-    if sys.argv[1] == '-h':
-        print('to disable the filter, add a third parameter: filter_cook_off')
-    else:
-        file = sys.argv[1]
-
-except:
-    print('Where\'s the archive???\n should I remind you about -h?')
-    sys.exit(1)
-
-try:
-    if sys.argv[2] == 'filter_cook_off':
-        filter_cook = False
-        print('False')
-    elif sys.argv[2] == '-h':
-        print('to disable the filter, add a third parameter: filter_cook_off')
-        sys.exit(0)
-except:
-    pass
-
-
-try:
-    if type_file(file) == 'rar':
-        rar_file(file)
-        # print('rar')
-    elif type_file(file) == 'gz':
-        tar_file(file)
-        # print('gz')
-    else:
-        archives_type =  type_file(file)
-        print('So far I can only work with RAR and GZ archives!')
+    except:
+        print('Where\'s the archive???\n should I remind you about -h?')
         sys.exit(1)
-        # print('gz')
+
+    try:
+        if sys.argv[2] == 'filter_cook_off':
+            filter_cook = False
+            print('False')
+        elif sys.argv[2] == '-h':
+            print('to disable the filter, add a third parameter: filter_cook_off')
+            sys.exit(0)
+    except:
+        pass
+else:
+    file = 'Facebook_20_16.zip'
+
+
+try:
+    for t_file in type_file(file):
+        if t_file == 'rar':
+            rar_file(file)
+            # print('rar')
+        elif t_file == 'gz':
+            tar_file(file)
+            # print('gz')
+        elif t_file == 'zip':
+            # print('ZIP')
+            zip_file(file)
+        else:
+            pass
+        # print('eeeeeeeeeee')
+        #     archives_type =  type_file(file)
+        #     print('So far I can only work with RAR and GZ archives!')
+        #     sys.exit(1)
+        #     # print('gz')
 except Exception as error:
     print(error)
