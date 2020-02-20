@@ -9,10 +9,10 @@ import rarfile
 
 
 debug = False
-# debug = True
+debug = True
 
 filter_cook = True
-filter_cook = False
+# filter_cook = False
 
 js = ["domain", "flag", "path", "secure", "expiration", "name", "value"]
 
