@@ -92,18 +92,19 @@ def tar_file(tar_file):
 
 def zip_file(file):
     result = {}
-    data = []
+    # data = []
     z = zipfile.ZipFile(file, 'r')
     # cookie_dict = []
     # print(z.filelist)
     for file in z.filelist:
         # result = {}
         data = []
-        cookie_dict = []
+        # cookie_dict = []
         f_name = file.filename.split('/')[0].replace('(', '').replace(')', '')
         # f_name = file.filename
         if not f_name in result:
             result[f_name] = {}
+            cookie_dict = []
 
         if 'pass' in file.filename.lower():
             # print('\tfile.filename',file.filename)
@@ -166,17 +167,18 @@ def zip_file(file):
                             except:
                                 pass
                             cookie = dict(zip(js, line_cook))
-                            # print(cookie)
                             cookie_dict.append(cookie)
-                    else:
-                        try:
-                            line_cook = list(line_cook.decode().replace('\r\n', '').split('\t'))
-                        except:
-                            pass
-                        cookie = dict(zip(js, line_cook))
-                        cookie_dict.append(cookie)
+                            # print(f_name, cookie_dict)
+                    # else:
+                    #     try:
+                    #         line_cook = list(line_cook.decode().replace('\r\n', '').split('\t'))
+                    #     except:
+                    #         pass
+                    #     cookie = dict(zip(js, line_cook))
+                    #     cookie_dict.append(cookie)
+                # print(f_name, cookie_dict)
+                result[f_name]['cookies'] = cookie_dict
 
-            result[f_name]['cookies'] = cookie_dict
     result['count_files'] = len(result)
     print(json.dumps(result))
 
@@ -284,7 +286,9 @@ if not debug:
     except:
         pass
 else:
-    file = ''
+    # file = '2020_02_06_13_28-lr4R6C.tar.gz'
+    # file = 'Facebook PL good 40.rar'
+    file = 'Facebook_20_16.zip'
 
 
 try:
