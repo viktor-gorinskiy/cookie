@@ -8,8 +8,8 @@ import fleep
 import rarfile
 
 
-debug = False
 debug = True
+debug = False
 
 filter_cook = True
 # filter_cook = False
@@ -94,11 +94,12 @@ def zip_file(file):
     result = {}
     data = []
     z = zipfile.ZipFile(file, 'r')
-    cookie_dict = []
+    # cookie_dict = []
     # print(z.filelist)
     for file in z.filelist:
         # result = {}
         data = []
+        cookie_dict = []
         f_name = file.filename.split('/')[0].replace('(', '').replace(')', '')
         # f_name = file.filename
         if not f_name in result:
@@ -141,19 +142,40 @@ def zip_file(file):
             result[f_name]['accounts'] = account
         # result[f_name]['cookies'] = cookie_dict
 
-        if 'cookies' in file.filename.lower():
-        #     # print('\tcook',file.filename)
-            coo = z.open(file.filename)
-        #     # print(file.filename,coo.readlines())
-            for line_cook in coo.readlines():
-                if 'facebook' in str(line_cook):
-        #         print(file.filename,line_cook.decode().replace('\r\n','').split('\t'))
-                    try:
-                        line_cook = list(line_cook.decode().replace('\r\n','').split('\t'))
-                    except:
-                        pass
-                    cookie = dict(zip(js, line_cook))
-                    cookie_dict.append(cookie)
+        # if 'cookies' in file.filename.lower():
+        # #     # print('\tcook',file.filename)
+        #     coo = z.open(file.filename)
+        # #     # print(file.filename,coo.readlines())
+        #     for line_cook in coo.readlines():
+        #         if 'facebook' in str(line_cook):
+        # #         print(file.filename,line_cook.decode().replace('\r\n','').split('\t'))
+        #             try:
+        #                 line_cook = list(line_cook.decode().replace('\r\n','').split('\t'))
+        #             except:
+        #                 pass
+        #             cookie = dict(zip(js, line_cook))
+        #             cookie_dict.append(cookie)
+        #             result[f_name]['cookies'] = cookie_dict
+        if 'cook' in file.filename.lower():
+            with z.open(file.filename) as cook_file:
+                for line_cook in cook_file:
+                    if filter_cook:
+                        if 'facebook' in str(line_cook):
+                            try:
+                                line_cook = list(line_cook.decode().replace('\r\n', '').split('\t'))
+                            except:
+                                pass
+                            cookie = dict(zip(js, line_cook))
+                            # print(cookie)
+                            cookie_dict.append(cookie)
+                    else:
+                        try:
+                            line_cook = list(line_cook.decode().replace('\r\n', '').split('\t'))
+                        except:
+                            pass
+                        cookie = dict(zip(js, line_cook))
+                        cookie_dict.append(cookie)
+
             result[f_name]['cookies'] = cookie_dict
     result['count_files'] = len(result)
     print(json.dumps(result))
@@ -241,7 +263,7 @@ def rar_file(archive):
 
     print(json.dumps(result))
 
-if debug:
+if not debug:
     try:
         if sys.argv[1] == '-h':
             print('to disable the filter, add a third parameter: filter_cook_off')
