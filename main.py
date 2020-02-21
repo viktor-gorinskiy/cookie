@@ -288,7 +288,7 @@ if not debug:
 else:
     # file = '2020_02_06_13_28-lr4R6C.tar.gz'
     # file = 'Facebook PL good 40.rar'
-    file = 'Facebook_20_16.zip'
+    file = ''
 
 
 try:
