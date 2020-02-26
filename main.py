@@ -14,6 +14,7 @@ debug = False
 filter_cook = True
 # filter_cook = False
 
+
 js = ["domain", "flag", "path", "secure", "expiration", "name", "value"]
 
 def type_file(file):
