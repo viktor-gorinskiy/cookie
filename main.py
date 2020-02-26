@@ -11,7 +11,6 @@ import rarfile
 debug = True
 debug = False
 
-
 filter_cook = True
 # filter_cook = False
 
