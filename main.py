@@ -6,15 +6,39 @@ import json
 import sys
 import fleep
 import rarfile
-
+import re
 
 debug = True
-debug = False
+# debug = False
 
 filter_cook = True
 # filter_cook = False
 
 js = ["domain", "flag", "path", "secure", "expiration", "name", "value"]
+def mega_lines(line):
+    result = []
+    res = []
+    for d in line:
+        d = d.split('\r\n')
+        if len(d) >= 3:
+            if 'facebook.com' in d[1]:
+                # print(d)
+                sp_login = re.findall(r'^[\w].+:\s+',d[2])[0]
+                sp_pass = re.findall(r'^[\w].+:\s+',d[3])[0]
+                login = d[2].split(sp_login)[1]
+                password = d[3].split(sp_pass)[1]
+                # print('\tlogin ==>', login)
+                # print('\tpass ==>', password)
+                access_pair = login + ' ' + password
+                result.append(access_pair)
+    result = list(set(result))
+    for r in result:
+        a = dict(zip(['login','pass'], r.split(' ')))
+        res.append(a)
+    # print(res)
+    return res
+
+
 
 def type_file(file):
     with open(file, "rb") as file:
@@ -111,29 +135,7 @@ def zip_file(file):
                 except:
                     pass
             mega_line = mega_line.split('\r\n\r\n')
-            account_pair = ''
-            for d in mega_line:
-                d = d.split('\r\n')
-                if len(d) >= 3:
-                    if 'facebook.com' in d[1]:
-                        # print(d[2])
-                        login = d[2].split('USER:')[1].replace('\t','')
-                        password = d[3].split('PASS:')[1].replace('\t','')
-                        account_pair = login + ' ' + password
-                        data.append(account_pair)
-            unique_user_pass = list(set(data))
-            account = []
-            for user_dat in unique_user_pass:
-                # number_of_accounts = len(user_dat)
-                user_pass = {}
-
-                user_pass['login'] = user_dat.split(' ')[0]
-                user_pass['pass'] = user_dat.split(' ')[1]
-                account.append(user_pass)
-                # print(user_pass)
-                # print(account)
-            # print(f_name, 'account', account,'\n')
-        # result['count_files'] = len(result)
+            account = mega_lines(mega_line)
             result[f_name]['count_accounts'] = len(account)
             result[f_name]['accounts'] = account
         # result[f_name]['cookies'] = cookie_dict
@@ -170,10 +172,12 @@ def rar_file(archive):
         data = []
         if file_in_rar.file_size > 0:
             file_name = file_in_rar.filename.replace('[facebook] Europe, Poland ','').split('/')[0].replace('(', '').replace(')', '')
+            # print(file_name)
             if not file_name in result:
                 result[file_name] = {}
 
             if 'pass' in file_in_rar.filename.lower():
+                # print('\t',file_in_rar.filename)
                 with rf.open(file_in_rar.filename) as file:
                     mega_line = ''
                     for line in file:
@@ -181,35 +185,7 @@ def rar_file(archive):
                             mega_line = mega_line + line.decode()
                         except: pass
                 mega_line = mega_line.split('\r\n\r\n')
-                # print(mega_line)
-                for d in mega_line:
-                    d = d.split('\r\n')
-                    # print(d)
-                    if len(d) >= 3:
-                        if d[0]:
-                            if 'facebook.com' in d[1]:
-                                login = d[2].split('Login: ')[1]
-                                password = d[3].split('Password: ')[1]
-                                account_pair = login + ' ' + password
-                                data.append(account_pair)
-                        else:
-                            if 'facebook.com' in d[2]:
-                                login = d[3].split('Login: ')[1]
-                                password = d[4].split('Password: ')[1]
-                                account_pair = login + ' ' + password
-                                # account_pair = password
-                                data.append(account_pair)
-
-                account = []
-                unique_user_pass = list(set(data))
-
-                user_pass = {}
-                for user_dat in unique_user_pass:
-                    user_pass['login'] = user_dat.split(' ')[0]
-                    user_pass['pass'] = user_dat.split(' ')[1]
-
-                    account.append(user_pass)
-                # print(file_name, account)
+                account = mega_lines(mega_line)
                 result[file_name]['count_accounts'] = len(account)
                 result[file_name]['accounts'] = account
     # print(len(result), result[file_name])
@@ -268,29 +244,29 @@ if not debug:
         pass
 else:
     # file = '2020_02_06_13_28-lr4R6C.tar.gz'
+    file = 'Facebook_20_16.zip'
     # file = 'Facebook PL good 40.rar'
-    # file = '/home/viktor/PycharmProjects/cookie/Facebook_13.zip'
     pass
 
 
 
-try:
-    for t_file in type_file(file):
-        if t_file == 'rar':
-            rar_file(file)
-            # print('rar')
-        elif t_file == 'gz':
-            tar_file(file)
-            # print('gz')
-        elif t_file == 'zip':
-            # print('ZIP')
-            zip_file(file)
-        else:
-            pass
+# try:
+for t_file in type_file(file):
+    if t_file == 'rar':
+        rar_file(file)
+        # print('rar')
+    elif t_file == 'gz':
+        tar_file(file)
+        # print('gz')
+    elif t_file == 'zip':
+        # print('ZIP')
+        zip_file(file)
+    else:
+        pass
         # print('eeeeeeeeeee')
         #     archives_type =  type_file(file)
         #     print('So far I can only work with RAR and GZ archives!')
         #     sys.exit(1)
     #     # print('gz')
-except Exception as error:
-    print(error)
+# except Exception as error:
+#     print(error)
