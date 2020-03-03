@@ -9,7 +9,7 @@ import rarfile
 import re
 
 debug = True
-# debug = False
+debug = False
 
 filter_cook = True
 # filter_cook = False
@@ -249,28 +249,28 @@ if not debug:
 else:
     # file = '2020_02_06_13_28-lr4R6C.tar.gz'
     # file = 'Facebook_20_16.zip'
-    file = '123.rar'
+    # file = '123.rar'
     pass
 
 
 
-# try:
-for t_file in type_file(file):
-    if t_file == 'rar':
-        rar_file(file)
-        # print('rar')
-    elif t_file == 'gz':
-        tar_file(file)
-        # print('gz')
-    elif t_file == 'zip':
-        # print('ZIP')
-        zip_file(file)
-    else:
-        pass
-        # print('eeeeeeeeeee')
-        #     archives_type =  type_file(file)
-        #     print('So far I can only work with RAR and GZ archives!')
-        #     sys.exit(1)
-    #     # print('gz')
-# except Exception as error:
-#     print(error)
+try:
+    for t_file in type_file(file):
+        if t_file == 'rar':
+            rar_file(file)
+            # print('rar')
+        elif t_file == 'gz':
+            tar_file(file)
+            # print('gz')
+        elif t_file == 'zip':
+            # print('ZIP')
+            zip_file(file)
+        else:
+            pass
+            # print('eeeeeeeeeee')
+            #     archives_type =  type_file(file)
+            #     print('So far I can only work with RAR and GZ archives!')
+            #     sys.exit(1)
+        #     # print('gz')
+except Exception as error:
+    print(error)
