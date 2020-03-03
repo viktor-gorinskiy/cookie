@@ -15,7 +15,9 @@ filter_cook = True
 # filter_cook = False
 
 js = ["domain", "flag", "path", "secure", "expiration", "name", "value"]
+
 def mega_lines(line):
+    line = line.lstrip().split('\r\n\r\n')
     result = []
     res = []
     for d in line:
@@ -130,11 +132,13 @@ def zip_file(file):
             # print(f.readlines())
             mega_line = ''
             for line in f:
+                # print('line', line)
                 try:
                     mega_line = mega_line + line.decode()
                 except:
                     pass
-            mega_line = mega_line.split('\r\n\r\n')
+            # mega_line = mega_line.lstrip().split('\r\n\r\n')
+            # print(mega_line)
             account = mega_lines(mega_line)
             result[f_name]['count_accounts'] = len(account)
             result[f_name]['accounts'] = account
@@ -184,7 +188,7 @@ def rar_file(archive):
                         try:
                             mega_line = mega_line + line.decode()
                         except: pass
-                mega_line = mega_line.split('\r\n\r\n')
+                # mega_line = mega_line.split('\r\n\r\n')
                 account = mega_lines(mega_line)
                 result[file_name]['count_accounts'] = len(account)
                 result[file_name]['accounts'] = account
@@ -244,8 +248,8 @@ if not debug:
         pass
 else:
     # file = '2020_02_06_13_28-lr4R6C.tar.gz'
-    file = 'Facebook_20_16.zip'
-    # file = 'Facebook PL good 40.rar'
+    # file = 'Facebook_20_16.zip'
+    file = '123.rar'
     pass
 
 
